@@ -6,60 +6,49 @@ import java.util.List;
 public class Debug {
 
     public static class Solution {
-        public List<List<Integer>> fourSum(int[] nums, int target) {
-            if (nums.length < 4) {
-                return Collections.emptyList();
+        private List<List<Integer>> result = new ArrayList<>();
+
+        public List<List<Integer>> combinationSum(int[] candidates, int target) {
+            backtracking(candidates, 0, target, new ArrayList<>());
+            return result;
+        }
+
+        private void backtracking(int[] cadidates, int index, int target, List<Integer> list) {
+            if (index >= cadidates.length) {
+                return;
             }
-            Arrays.sort(nums);
 
-            List<List<Integer>> result = new ArrayList<>();
+            for (int i = index; i < cadidates.length; i++) {
+                List<Integer> tempList = new ArrayList<>(list);
 
-            int len = nums.length;
-            for (int i = 0; i <= len - 4; i++) {
-                if (i > 0 && nums[i] == nums[i - 1]) {
-                    continue;
-                }
+                int v = cadidates[i];
 
-                for (int j = i + 1; j <= len - 3; j++) {
-                    if (j > i + 1 && nums[j] == nums[j - 1]) {
-                        continue;
-                    }
+                if (v == target) {
+                    tempList.add(v);
+                    result.add(tempList);
+                } else if (v < target) {
+                    int temp = target;
 
-                    int t = target - (nums[i] + nums[j]);
-                    if (t < 0) {
-                        break;
-                    }
+                    while (v <= temp) {
+                        tempList.add(v);
 
-                    int m = j + 1, n = len - 1;
-                    while (m < n) {
-                        int temp = nums[m] + nums[n];
-                        if (temp < t) {
-                            m++;
-                        } else if (temp > t) {
-                            n--;
+                        temp -= v;
+                        if (temp < 0) {
+                            break;
+                        } else if (temp == 0) {
+                            result.add(tempList);
                         } else {
-                            result.add(Arrays.asList(nums[i], nums[j], nums[m], nums[n]));
-
-                            while (m < n && nums[m] == nums[m + 1]) {
-                                m++;
-                            }
-                            m++;
-
-                            while (m < n && nums[n] == nums[n - 1]) {
-                                n--;
-                            }
-                            n--;
+                            List<Integer> subList = new ArrayList<>(tempList);
+                            backtracking(cadidates, i + 1, temp, subList);
                         }
                     }
                 }
             }
-
-            return result;
         }
     }
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        System.out.println(solution.fourSum(new int[] { 1, 0, -1, 0, -2, 2 }, 0));
+        System.out.println(solution.combinationSum(new int[] { 2, 3, 5 }, 8));
     }
 }
